@@ -1,4 +1,4 @@
-const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID_HERE';
+const SPREADSHEET_ID = '1fR2FqN3YKwFLUEub8eIRIAB9IAwbqj7QpAr1RN4vbs8';
 
 function doGet(e) {
   const action = e.parameter.action;
@@ -21,7 +21,9 @@ function doGet(e) {
 }
 
 function doPost(e) {
-  const data = JSON.parse(e.postData.contents);
+  const data = typeof e.postData.contents === 'string'
+    ? JSON.parse(e.postData.contents)
+    : e.parameter;
   const action = data.action;
 
   if (action === 'submitLoan') {

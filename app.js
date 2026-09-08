@@ -1,6 +1,6 @@
 // ===== CONFIG =====
 // วาง URL ของ Google Apps Script ที่ deploy แล้ว
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwlcuXU-VgQ3kblRJzqss_2ydVcsvJEnC8k8PK5e48awATt5WdY3NhT8y8qNwtBOinV/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxgERuu0R3Y1jYnOBZ8HARq_64UmBuUG_G9J_QNjg_FCokcff9bzo23fCA0n9UXvG_b/exec';
 
 // ===== STATE =====
 let cameraStream = null;
@@ -317,17 +317,14 @@ async function apiGet(params) {
 }
 
 async function apiPost(data) {
-  const res = await fetch(WEB_APP_URL, {
+  // GAS does not support CORS preflight, so we POST with "no-cors".
+  // The backend writes on its side; we can't read the response body (opaque),
+  // so any error is surfaced by re-fetching data afterwards (GET crosses CORS).
+  await fetch(WEB_APP_URL, {
     method: 'POST',
     mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(data)
   });
-  // no-cors won't return json, so we assume success
-  // For production, deploy with access set to "Anyone" and remove mode: 'no-cors'
-  try {
-    return await res.json();
-  } catch {
-    return { status: 'ok', message: 'ส่งข้อมูลสำเร็จ' };
-  }
+  return { status: 'ok' };
 }

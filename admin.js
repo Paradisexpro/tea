@@ -1,5 +1,5 @@
 // ===== CONFIG =====
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwlcuXU-VgQ3kblRJzqss_2ydVcsvJEnC8k8PK5e48awATt5WdY3NhT8y8qNwtBOinV/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxgERuu0R3Y1jYnOBZ8HARq_64UmBuUG_G9J_QNjg_FCokcff9bzo23fCA0n9UXvG_b/exec';
 
 // ===== STATE =====
 let allLoans = [];
@@ -253,7 +253,7 @@ async function saveEquipment() {
     closeEqModal();
     loadEquipment();
   } catch (err) {
-    alert('เกิดข้อผิดพลาด');
+    alert('เกิดข้อผิดพลาด: ' + (err.message || ''));
   } finally {
     showLoading(false);
   }
@@ -266,7 +266,7 @@ async function deleteEquipment(eqId) {
     await apiPost({ action: 'deleteEquipment', equipmentId: eqId });
     loadEquipment();
   } catch (err) {
-    alert('เกิดข้อผิดพลาด');
+    alert('เกิดข้อผิดพลาด: ' + (err.message || ''));
   } finally {
     showLoading(false);
   }
@@ -368,15 +368,14 @@ async function apiGet(params) {
 }
 
 async function apiPost(data) {
-  const res = await fetch(WEB_APP_URL, {
+  // GAS does not support CORS preflight, so we POST with "no-cors".
+  // The backend writes on its side; we can't read the response body (opaque),
+  // so any error is surfaced by re-fetching data afterwards (GET crosses CORS).
+  await fetch(WEB_APP_URL, {
     method: 'POST',
     mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(data)
   });
-  try {
-    return await res.json();
-  } catch {
-    return { status: 'ok', message: 'ส่งข้อมูลสำเร็จ' };
-  }
+  return { status: 'ok' };
 }
