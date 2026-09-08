@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบยืมอุปกรณ์กีฬา</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header id="siteHeader">
+    <div class="header-content">
+      <div class="logo-area">
+        <img id="siteLogo" src="" alt="Logo" class="site-logo" style="display:none;">
+        <h1 id="siteTitle">ระบบยืมอุปกรณ์กีฬา</h1>
+      </div>
+      <a href="admin.html" class="admin-link">🔐 แอดมิน</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <p id="siteDescription" class="hero-desc">กรุณายืมอุปกรณ์กีฬาตามกฎระเบียบที่กำหนด</p>
+    </section>
+
+    <section class="form-section">
+      <div class="card">
+        <h2>📋 แบบฟอร์มยืมอุปกรณ์กีฬา</h2>
+        <form id="loanForm">
+          <div class="form-group">
+            <label for="borrowerName">ชื่อ-นามสกุล <span class="required">*</span></label>
+            <input type="text" id="borrowerName" placeholder="กรอกชื่อ-นามสกุล" required>
+          </div>
+
+          <div class="form-group">
+            <label for="borrowerPhone">เบอร์โทรศัพท์</label>
+            <input type="tel" id="borrowerPhone" placeholder="กรอกเบอร์โทรศัพท์ (ไม่บังคับ)">
+          </div>
+
+          <div class="form-group">
+            <label for="equipmentSelect">อุปกรณ์กีฬา <span class="required">*</span></label>
+            <select id="equipmentSelect" required>
+              <option value="">-- เลือกอุปกรณ์ --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="loanDate">วันที่ยืม <span class="required">*</span></label>
+            <input type="date" id="loanDate" required>
+          </div>
+
+          <div class="form-group">
+            <label>ช่วงเวลา <span class="required">*</span></label>
+            <div id="timeSlots" class="time-slots-grid">
+              <p class="loading-text">กรุณาเลือกวันที่ก่อน</p>
+            </div>
+            <input type="hidden" id="selectedTimeSlot" required>
+          </div>
+
+          <div class="form-group">
+            <label>ถ่ายรูปผู้ยืม <span class="required">*</span></label>
+            <div class="photo-section">
+              <div id="cameraContainer">
+                <video id="cameraPreview" autoplay playsinline></video>
+                <canvas id="photoCanvas" style="display:none;"></canvas>
+              </div>
+              <div id="photoPreviewContainer" style="display:none;">
+                <img id="photoPreview" alt="Preview">
+              </div>
+              <div class="photo-buttons">
+                <button type="button" id="startCameraBtn" class="btn btn-secondary">📷 เปิดกล้อง</button>
+                <button type="button" id="captureBtn" class="btn btn-primary" style="display:none;">📸 ถ่ายรูป</button>
+                <button type="button" id="retakeBtn" class="btn btn-warning" style="display:none;">🔄 ถ่ายใหม่</button>
+              </div>
+              <p class="photo-note">หรือ <label for="fileUpload" class="upload-link">อัปโหลดรูป</label>
+              <input type="file" id="fileUpload" accept="image/*" style="display:none;"></p>
+            </div>
+            <input type="hidden" id="photoData" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+            ✅ ยืมอุปกรณ์
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <section class="equipment-section" id="equipmentSection">
+      <h2>🏆 อุปกรณ์ที่มี</h2>
+      <div id="equipmentGrid" class="equipment-grid">
+        <p class="loading-text">กำลังโหลด...</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="successModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <div class="success-icon">✅</div>
+      <h2>ยืมอุปกรณ์สำเร็จ!</h2>
+      <p id="successMessage"></p>
+      <button class="btn btn-primary" onclick="closeModal()">ปิด</button>
+    </div>
+  </div>
+
+  <div id="loadingOverlay" class="overlay" style="display:none;">
+    <div class="spinner"></div>
+    <p>กำลังดำเนินการ...</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

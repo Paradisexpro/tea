@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แอดมิน - ระบบยืมอุปกรณ์กีฬา</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo-area">
+        <h1>🔐 ระบบหลังบ้าน</h1>
+      </div>
+      <a href="index.html" class="admin-link">🏠 หน้าหลัก</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- LOGIN -->
+    <section id="loginSection" class="admin-login-section">
+      <div class="card">
+        <h2>🔑 เข้าสู่ระบบแอดมิน</h2>
+        <div class="form-group">
+          <label for="adminPassword">รหัสผ่าน</label>
+          <input type="password" id="adminPassword" placeholder="กรอกรหัสผ่าน">
+        </div>
+        <button class="btn btn-primary btn-block" id="loginBtn">เข้าสู่ระบบ</button>
+        <p class="loading-text" id="loginError" style="display:none;color:#ef4444;"></p>
+      </div>
+    </section>
+
+    <!-- ADMIN PANEL -->
+    <section id="adminPanel" style="display:none;">
+      <div class="admin-tabs">
+        <button class="tab-btn active" data-tab="loans">📋 รายการยืม</button>
+        <button class="tab-btn" data-tab="equipment">🏆 จัดการอุปกรณ์</button>
+        <button class="tab-btn" data-tab="settings">⚙️ ตั้งค่าเว็บ</button>
+      </div>
+
+      <!-- LOANS TAB -->
+      <div class="tab-content active" id="tab-loans">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+            <h2 style="margin:0;border:0;padding:0;">📋 รายการยืมทั้งหมด</h2>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <select id="filterStatus" style="padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-family:inherit;">
+                <option value="all">ทั้งหมด</option>
+                <option value="borrowed">กำลังยืม</option>
+                <option value="returned">คืนแล้ว</option>
+              </select>
+              <button class="btn btn-secondary" onclick="loadLoans()">🔄 รีเฟรช</button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table id="loansTable">
+              <thead>
+                <tr>
+                  <th>รูป</th>
+                  <th>รหัส</th>
+                  <th>ชื่อ</th>
+                  <th>เบอร์โทร</th>
+                  <th>อุปกรณ์</th>
+                  <th>วันที่</th>
+                  <th>เวลา</th>
+                  <th>สถานะ</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="loansBody">
+              </tbody>
+            </table>
+          </div>
+          <p id="noLoans" class="loading-text" style="display:none;">ยังไม่มีรายการยืม</p>
+        </div>
+      </div>
+
+      <!-- EQUIPMENT TAB -->
+      <div class="tab-content" id="tab-equipment">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+            <h2 style="margin:0;border:0;padding:0;">🏆 จัดการอุปกรณ์กีฬา</h2>
+            <button class="btn btn-primary" onclick="showAddEquipment()">➕ เพิ่มอุปกรณ์</button>
+          </div>
+          <div class="table-container">
+            <table id="equipmentTable">
+              <thead>
+                <tr>
+                  <th>รูป</th>
+                  <th>รหัส</th>
+                  <th>ชื่อ</th>
+                  <th>รายละเอียด</th>
+                  <th>จำนวน</th>
+                  <th>ว่าง</th>
+                  <th>สถานะ</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="equipmentBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ADD/EDIT EQUIPMENT MODAL -->
+        <div id="eqModal" class="modal" style="display:none;">
+          <div class="modal-content" style="max-width:500px;text-align:left;">
+            <h2 id="eqModalTitle">เพิ่มอุปกรณ์</h2>
+            <div class="form-group">
+              <label>ชื่ออุปกรณ์ <span class="required">*</span></label>
+              <input type="text" id="eqName" placeholder="เช่น ฟุตบอล">
+            </div>
+            <div class="form-group">
+              <label>รายละเอียด</label>
+              <input type="text" id="eqDesc" placeholder="รายละเอียด">
+            </div>
+            <div class="form-group">
+              <label>จำนวน</label>
+              <input type="number" id="eqQty" value="1" min="1">
+            </div>
+            <div class="form-group">
+              <label>URL รูปภาพ (ไม่บังคับ)</label>
+              <input type="text" id="eqImage" placeholder="https://...">
+            </div>
+            <div style="display:flex;gap:10px;margin-top:20px;">
+              <button class="btn btn-primary" id="eqSaveBtn" onclick="saveEquipment()">บันทึก</button>
+              <button class="btn btn-secondary" onclick="closeEqModal()">ยกเลิก</button>
+            </div>
+            <input type="hidden" id="eqEditId" value="">
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div class="tab-content" id="tab-settings">
+        <div class="card">
+          <h2>⚙️ ตั้งค่าเว็บไซต์</h2>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>ชื่อเว็บไซต์</label>
+              <input type="text" id="setSiteName" placeholder="ชื่อเว็บไซต์">
+            </div>
+            <div class="setting-item">
+              <label>คำอธิบาย</label>
+              <input type="text" id="setSiteDesc" placeholder="คำอธิบายเว็บไซต์">
+            </div>
+            <div class="setting-item">
+              <label>URL โลโก้</label>
+              <input type="text" id="setLogoUrl" placeholder="https://example.com/logo.png" oninput="previewLogo(this.value)">
+              <img id="logoPreview" class="logo-preview" style="display:none;" alt="Logo Preview">
+            </div>
+            <div class="setting-item">
+              <label>สีหลัก (Primary Color)</label>
+              <div class="color-input-wrap">
+                <input type="color" id="setPrimaryColor" value="#4f46e5">
+                <input type="text" id="setPrimaryColorText" value="#4f46e5" style="width:120px;" oninput="syncColor('primary', this.value)">
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>สีเน้น (Accent Color)</label>
+              <div class="color-input-wrap">
+                <input type="color" id="setAccentColor" value="#10b981">
+                <input type="text" id="setAccentColorText" value="#10b981" style="width:120px;" oninput="syncColor('accent', this.value)">
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>รหัสผ่านแอดมิน</label>
+              <input type="password" id="setAdminPass" placeholder="รหัสผ่านแอดมิน">
+            </div>
+            <div class="setting-item">
+              <label>จำนวนวันยืมสูงสุด</label>
+              <input type="number" id="setMaxDays" value="7" min="1" max="90">
+            </div>
+            <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:12px;">💾 บันทึกการตั้งค่า</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="loadingOverlay" class="overlay" style="display:none;">
+    <div class="spinner"></div>
+    <p>กำลังดำเนินการ...</p>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
